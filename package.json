@@ -25,5 +25,7 @@
         "type": "git",
         "url": "http://github.com/190N/autodeploy.git"
     },
-    "dependencies": {}
+    "dependencies": {
+        "ms": "^0.7.0"
+    }
 }
