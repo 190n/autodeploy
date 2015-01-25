@@ -1,0 +1,29 @@
+{
+    "name": "autodeploy",
+    "description": "Simple wrapper to make it easy to automatically deploy newer versions of your web apps",
+    "tags": [
+        "deployment"
+    ],
+    "version": "0.0.1",
+    "bugs": "http://github.com/190N/autodeploy/issues",
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "http://www.opensource.org/licenses/mit-license.php"
+        },
+        {
+            "type": "GPL-3.0",
+            "url": "http://www.opensource.org/licenses/gpl-3.0.html"
+        }
+    ],
+    "author": {
+        "name": "190N",
+        "email": "benjamin.j.grant@gmail.com"
+    },
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/190N/autodeploy.git"
+    },
+    "dependencies": {}
+}
