@@ -94,6 +94,14 @@ The path that will restart your app.
 
 Default: `'/'`
 
+###authorize
+A function to authorize the request. This is meant to support systems like
+GitHub's Webhooks, where your app is given a secret that you specify as
+authorization. The function is passed the request object from node's `http`
+module as the only argument.
+
+Default: `function() { return true; }`
+
 ##License
 Autodeploy is dual-licensed under the
 [MIT](http://www.opensource.org/licenses/mit-license.php) and

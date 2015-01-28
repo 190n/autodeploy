@@ -8,6 +8,9 @@ module.exports = function(options) {
         shouldRestart = options.shouldRestart || function() {
             return true;
         },
+        authorize = options.authorize || function() {
+            return true;
+        },
         restart = options.restart,
         interval = options.interval || 10000,
         path = options.path || '/';
@@ -18,6 +21,7 @@ module.exports = function(options) {
             'Content-Type': 'text/plain'
         });
         res.end('');
+        if(!authorize(req)) return;
         if(checkAgainInterval) return;
         if(url.parse(req.url).pathname != path) return;
         if(shouldRestart()) restart();
