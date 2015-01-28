@@ -10,8 +10,7 @@ module.exports = function(options) {
         },
         restart = options.restart,
         interval = options.interval || 10000,
-        path = options.path || '/',
-        checkAgainInterval;
+        path = options.path || '/';
     if(!restart) throw new Error('No restart function was passed to autodeploy!');
     if(typeof interval == 'string') interval = ms(interval);
     return http.createServer(function(req, res) {
