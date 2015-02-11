@@ -41,6 +41,7 @@ var server = autodeploy({
     // called to see if it's a good time to restart the server
     shouldRestart: function() {
         console.log('shouldRestart called');
+        // don't do this in production environments!
         return Math.random() > 0.5;
     },
 
