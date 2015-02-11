@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Autodeploy by 190n</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Autodeploy</h1>
+        <h2>Simple wrapper to make it easy to automatically deploy newer versions of your web apps</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/190n/autodeploy/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/190n/autodeploy/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/190n/autodeploy" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="autodeploy" class="anchor" href="#autodeploy" aria-hidden="true"><span class="octicon octicon-link"></span></a>autodeploy</h1>
+
+<p><img src="https://nodei.co/npm/autodeploy.png?downloads=true" alt="nodei.co badge"></p>
+
+<p>Simple wrapper to make it easy to automatically deploy newer versions of your web apps</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<div class="highlight highlight-bash"><pre>npm install --save autodeploy</pre></div>
+
+<h2>
+<a id="what-it-is" class="anchor" href="#what-it-is" aria-hidden="true"><span class="octicon octicon-link"></span></a>What it Is</h2>
+
+<p>Autodeploy is a wrapper around node's core <code>http</code> module to make it easy to
+roll your own (for example) Git-based deployment.</p>
+
+<p>Since many code-hosting sites offer hooks that they will make an HTTP request to
+when your code is changed, Autodeploy lets you set up a server on a different
+port that your code-hosting site can make requests to.</p>
+
+<p>While automated deployment is great, there are some concerns that need to be
+addressed. For instance, there may be some times of day where you know that your
+app will be under high load. You wouldn't want to restart your server during
+those hours. Autodeploy provides a callback so you can decide if you want to
+restart your app. If the callback returns <code>false</code>, it will keep calling your
+callback at specified intervals, to make sure that the new code is eventually
+deployed.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p><code>require('autodeploy')</code> returns a function that you call with options. That
+function then returns an instance of <code>http.Server</code>, which you can call <code>listen</code>
+on to start the server. While Autodeploy won't fall apart if you start multiple
+servers (as long as they are on different ports), this is not recommended.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-js"><pre><span class="pl-c">// import autodeploy</span>
+<span class="pl-s">var</span> autodeploy <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>autodeploy<span class="pl-pds">'</span></span>);
+
+<span class="pl-c">// create the server</span>
+<span class="pl-s">var</span> server <span class="pl-k">=</span> autodeploy({
+    <span class="pl-c">// called to see if it's a good time to restart the server</span>
+    <span class="pl-en">shouldRestart</span>: <span class="pl-st">function</span>() {
+        <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">'</span>shouldRestart called<span class="pl-pds">'</span></span>);
+        <span class="pl-c">// don't do this in production environments!</span>
+        <span class="pl-k">return</span> <span class="pl-s3">Math</span>.<span class="pl-s3">random</span>() <span class="pl-k">&gt;</span> <span class="pl-c1">0.5</span>;
+    },
+
+    <span class="pl-c">// called when the app needs to restart</span>
+    <span class="pl-en">restart</span>: <span class="pl-st">function</span>() {
+        <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">'</span>restart called<span class="pl-pds">'</span></span>);
+        <span class="pl-c">// fetch new code</span>
+        <span class="pl-c">// stop the app</span>
+        <span class="pl-c">// install dependencies</span>
+        <span class="pl-c">// start the app again</span>
+    },
+
+    <span class="pl-c">// specifies how often it should call shouldRestart if it returns false the first time</span>
+    interval<span class="pl-k">:</span> <span class="pl-c1">5000</span>,
+
+    <span class="pl-c">// path to listen on</span>
+    path<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>/restart<span class="pl-pds">'</span></span>
+});
+
+<span class="pl-c">// start it!</span>
+server.listen(<span class="pl-c1">8000</span>);
+<span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">'</span>autodeploy listening at localhost:8000/restart<span class="pl-pds">'</span></span>);</pre></div>
+
+<h2>
+<a id="options" class="anchor" href="#options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Options</h2>
+
+<p>Options are passed in as an object, the only argument to Autodeploy's exported
+function.</p>
+
+<h3>
+<a id="shouldrestart" class="anchor" href="#shouldrestart" aria-hidden="true"><span class="octicon octicon-link"></span></a>shouldRestart</h3>
+
+<p><code>shouldRestart</code> is called by Autodeploy the first time the request is made. It
+should return <code>true</code> if it's a good time to restart the app, <code>false</code> otherwise.</p>
+
+<p>If it returns <code>false</code> the first time, Autodeploy will keep calling it at the
+interval specified.</p>
+
+<p>Default: <code>function() { return true; }</code></p>
+
+<h3>
+<a id="restart" class="anchor" href="#restart" aria-hidden="true"><span class="octicon octicon-link"></span></a>restart</h3>
+
+<p><code>restart</code> is the function that Autodeploy calls to restart your app.</p>
+
+<p>This option is required. Autodeploy will throw an error if it is not specified.</p>
+
+<h3>
+<a id="interval" class="anchor" href="#interval" aria-hidden="true"><span class="octicon octicon-link"></span></a>interval</h3>
+
+<p>The delay between subsequent calls to <code>shouldRestart</code>. This should be either a
+number of milliseconds or a string understandable by the
+<a href="http://npmjs.com/package/ms">ms</a> module.</p>
+
+<p>Default: <code>10000</code></p>
+
+<h3>
+<a id="path" class="anchor" href="#path" aria-hidden="true"><span class="octicon octicon-link"></span></a>path</h3>
+
+<p>The path that will restart your app.</p>
+
+<p>Default: <code>'/'</code></p>
+
+<h3>
+<a id="authorize" class="anchor" href="#authorize" aria-hidden="true"><span class="octicon octicon-link"></span></a>authorize</h3>
+
+<p>A function to authorize the request. This is meant to support systems like
+GitHub's Webhooks, where your app is given a secret that you specify as
+authorization. The function is passed the request object from node's <code>http</code>
+module as the only argument.</p>
+
+<p>Default: <code>function() { return true; }</code></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Autodeploy is dual-licensed under the
+<a href="http://www.opensource.org/licenses/mit-license.php">MIT</a> and
+<a href="http://www.opensource.org/licenses/gpl-3.0.html">GPL 3.0</a> licenses. This means
+that you can use it in <strong>any</strong> package, no matter what license you are using.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
